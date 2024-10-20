@@ -24,6 +24,8 @@ grid = [
     [0, 0, 0, 0, 8, 0, 0, 7, 9]
 ]
 
+selected_cell = None  # To keep track of the selected cell
+
 def draw_grid(screen):
     block_size = WIDTH // 9
     for i in range(10):
@@ -41,7 +43,15 @@ def draw_numbers(screen, grid):
                 text = FONT.render(str(grid[row][col]), True, BLACK)
                 screen.blit(text, (col * block_size + 20, row * block_size + 10))
 
+def get_cell(mouse_pos):
+    x, y = mouse_pos
+    block_size = WIDTH // 9
+    col = x // block_size
+    row = y // block_size
+    return row, col
+
 def main():
+    global selected_cell
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Sudoku")
 
@@ -55,11 +65,23 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            
+            # Get mouse click position to select a cell
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                selected_cell = get_cell(mouse_pos)
 
+            # Check for number input
+            if event.type == pygame.KEYDOWN:
+                if selected_cell:
+                    row, col = selected_cell
+                    # Only accept numbers 1-9
+                    if event.key in range(pygame.K_1, pygame.K_9):
+                        grid[row][col] = event.key - pygame.K_0  # Convert key to number (1-9)
+        
         pygame.display.update()
 
     pygame.quit()
 
 if __name__ == "__main__":
     main()
-
