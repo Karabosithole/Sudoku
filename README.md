@@ -1,6 +1,3 @@
-I apologize for the confusion! Here’s the correct version in plain text, without markdown formatting:
-
----
 
 # Sudoku
 
@@ -61,7 +58,3 @@ When finished, deactivate the virtual environment with:
 ```
 deactivate
 ```
-
----
-
-This should now be ready for you to copy into your README or documentation! Let me know if anything else needs adjustments.
