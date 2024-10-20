@@ -50,6 +50,11 @@ def get_cell(mouse_pos):
     row = y // block_size
     return row, col
 
+# function to check if the number is in the row, 
+# returning false if not and true if is
+def is_number_in_row():
+    return ""
+
 def main():
     global selected_cell
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
