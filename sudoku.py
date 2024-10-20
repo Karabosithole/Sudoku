@@ -12,7 +12,7 @@ BLACK = (0, 0, 0)
 FONT = pygame.font.SysFont('Arial', 40)
 
 # Sudoku puzzle (0 represents empty cells)
-grid = [
+grid = [ 
     [5, 3, 0, 0, 7, 0, 0, 0, 0],
     [6, 0, 0, 1, 9, 5, 0, 0, 0],
     [0, 9, 8, 0, 0, 0, 0, 6, 0],
