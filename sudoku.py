@@ -11,33 +11,76 @@ WHITE = (255, 255, 255)  # Color for the background
 BLACK = (0, 0, 0)  # Color for grid and text
 FONT = pygame.font.SysFont('Arial', 40)  # Font for displaying numbers
 
-def generate_sudoku():
-    """Generates a random Sudoku puzzle."""
-    base = 3
-    side = base * base
+def generate_complete_grid():
+    """Generates a fully solved Sudoku grid using backtracking."""
+    def is_valid_move(grid, row, col, num):
+        # Check if the number is already in the row or column
+        for i in range(9):
+            if grid[row][i] == num or grid[i][col] == num:
+                return False
+        # Check the 3x3 box
+        start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+        for r in range(start_row, start_row + 3):
+            for c in range(start_col, start_col + 3):
+                if grid[r][c] == num:
+                    return False
+        return True
 
-    # Randomly shuffle numbers
-    def pattern(r, c): return (base * (r % base) + r // base + c) % side
-    def shuffle(s): return random.sample(s, len(s))
-    rBase = range(base)
-    rows = [g * base + r for g in shuffle(rBase) for r in shuffle(rBase)]
-    cols = [g * base + c for g in shuffle(rBase) for c in shuffle(rBase)]
-    nums = shuffle(range(1, base * base + 1))
+    def solve(grid):
+        for row in range(9):
+            for col in range(9):
+                if grid[row][col] == 0:
+                    for num in range(1, 10):
+                        if is_valid_move(grid, row, col, num):
+                            grid[row][col] = num
+                            if solve(grid):
+                                return True
+                            grid[row][col] = 0  # Reset on backtrack
+                    return False
+        return True
 
-    # Generate an empty grid
-    grid = [[0 for _ in range(side)] for _ in range(side)]
-
-    for r in range(base):
-        for c in range(base):
-            for i in range(1, base * base + 1):
-                grid[pattern(r, c)][pattern(r, i - 1)] = nums[i - 1]
-
-    # Remove some numbers to create the puzzle
-    squares = side * side
-    for p in random.sample(range(squares), squares // 2):
-        grid[p // side][p % side] = 0
-
+    grid = [[0 for _ in range(9)] for _ in range(9)]
+    solve(grid)
     return grid
+
+def remove_numbers(grid):
+    """Removes numbers from the grid to create the puzzle while ensuring it has a unique solution."""
+    attempts = 60  # Number of cells to remove
+    for _ in range(attempts):
+        row, col = random.randint(0, 8), random.randint(0, 8)
+        while grid[row][col] == 0:  # Find a filled cell to remove
+            row, col = random.randint(0, 8), random.randint(0, 8)
+        backup = grid[row][col]  # Backup the number before removing
+        grid[row][col] = 0  # Remove the number
+
+        # Check if there is still a unique solution
+        if not has_unique_solution(grid):
+            grid[row][col] = backup  # Restore the number if not unique
+
+def has_unique_solution(grid):
+    """Check if the grid has a unique solution."""
+    def count_solutions(grid):
+        for row in range(9):
+            for col in range(9):
+                if grid[row][col] == 0:
+                    count = 0
+                    for num in range(1, 10):
+                        if is_valid_move(grid, row, col, num):
+                            grid[row][col] = num
+                            count += count_solutions(grid)
+                            grid[row][col] = 0
+                        if count > 1:  # More than one solution found
+                            return count
+                    return count
+        return 1  # Found one valid solution
+
+    return count_solutions(grid) == 1  # Check for a unique solution
+
+def generate_sudoku():
+    """Generates a valid Sudoku puzzle."""
+    full_grid = generate_complete_grid()  # Generate a full grid
+    remove_numbers(full_grid)  # Create a puzzle by removing numbers
+    return full_grid
 
 # Generate a random Sudoku puzzle
 grid = generate_sudoku()
