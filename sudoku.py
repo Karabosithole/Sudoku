@@ -5,11 +5,11 @@ import time
 pygame.init()
 
 # Define constants
-WIDTH = 540
-HEIGHT = 600
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-FONT = pygame.font.SysFont('Arial', 40)
+WIDTH = 540  # Width of the game window
+HEIGHT = 600  # Height of the game window
+WHITE = (255, 255, 255)  # Color for the background
+BLACK = (0, 0, 0)  # Color for grid and text
+FONT = pygame.font.SysFont('Arial', 40)  # Font for displaying numbers
 
 # Sudoku puzzle (0 represents empty cells)
 grid = [ 
@@ -24,44 +24,76 @@ grid = [
     [0, 0, 0, 0, 8, 0, 0, 7, 9]
 ]
 
-selected_cell = None  # To keep track of the selected cell
+selected_cell = None  # Track the currently selected cell
 
 def draw_grid(screen):
+    """
+    Draws the Sudoku grid lines on the screen.
+    
+    Args:
+        screen (pygame.Surface): The screen surface where the grid is drawn.
+    """
     block_size = WIDTH // 9
     for i in range(10):
-        # Draw grid lines
+        # Draw grid lines with different thicknesses for sub-grids
         thickness = 3 if i % 3 == 0 else 1
         pygame.draw.line(screen, BLACK, (0, i * block_size), (WIDTH, i * block_size), thickness)
         pygame.draw.line(screen, BLACK, (i * block_size, 0), (i * block_size, WIDTH), thickness)
 
 def draw_numbers(screen, grid):
+    """
+    Draws numbers from the grid onto the screen.
+    
+    Args:
+        screen (pygame.Surface): The screen surface where numbers are drawn.
+        grid (list of list of int): The Sudoku puzzle grid with numbers.
+    """
     block_size = WIDTH // 9
     for row in range(9):
         for col in range(9):
             if grid[row][col] != 0:
-                # Draw numbers
+                # Render and draw each number in its cell
                 text = FONT.render(str(grid[row][col]), True, BLACK)
                 screen.blit(text, (col * block_size + 20, row * block_size + 10))
 
 def get_cell(mouse_pos):
+    """
+    Gets the row and column of the cell selected by mouse click.
+    
+    Args:
+        mouse_pos (tuple of int): The x and y coordinates of the mouse click.
+    
+    Returns:
+        tuple of int: The (row, col) of the selected cell.
+    """
     x, y = mouse_pos
     block_size = WIDTH // 9
     col = x // block_size
     row = y // block_size
     return row, col
 
-# function to check if the number is in the row, 
-# returning false if not and true if is
+# Placeholder function for checking if a number is in a row
 def is_number_in_row():
-    return ""
+    """
+    Checks if a number is in a specific row.
+    
+    Returns:
+        bool: True if number is found in the row, False otherwise.
+    """
+    return ""  # Placeholder, needs implementation
 
 def main():
+    """
+    Main function to run the Sudoku game. Initializes the game window,
+    handles events, and updates the display.
+    """
     global selected_cell
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Sudoku")
 
     running = True
     while running:
+        # Fill the screen with a white background
         screen.fill(WHITE)
         draw_grid(screen)
         draw_numbers(screen, grid)
@@ -71,19 +103,19 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             
-            # Get mouse click position to select a cell
+            # Detect mouse click to select a cell
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 selected_cell = get_cell(mouse_pos)
 
-            # Check for number input
+            # Check for number input (1-9) when a cell is selected
             if event.type == pygame.KEYDOWN:
                 if selected_cell:
                     row, col = selected_cell
-                    # Only accept numbers 1-9
-                    if event.key in range(pygame.K_1, pygame.K_9):
-                        grid[row][col] = event.key - pygame.K_0  # Convert key to number (1-9)
-        
+                    # Accept only number keys (1-9)
+                    if event.key in range(pygame.K_1, pygame.K_9 + 1):
+                        grid[row][col] = event.key - pygame.K_0  # Convert key to number
+
         pygame.display.update()
 
     pygame.quit()
