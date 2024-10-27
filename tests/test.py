@@ -18,8 +18,8 @@ def test_get_cell():
     assert get_cell((539, 599)) == (8, 8)  # Bottom-right corner
     assert get_cell((270, 300)) == (5, 4)  # Center of the grid
 
-    def test_draw_grid():
-        """Test that `draw_grid` runs without errors."""
+def test_draw_grid():
+    """Test that `draw_grid` runs without errors."""
     try:
         draw_grid(screen)
     except Exception as e:
