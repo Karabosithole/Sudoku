@@ -64,13 +64,20 @@ def get_cell(mouse_pos):
         mouse_pos (tuple of int): The x and y coordinates of the mouse click.
     
     Returns:
-        tuple of int: The (row, col) of the selected cell.
+        tuple of int: The (row, col) of the selected cell, or (-1, -1) if out of bounds.
     """
     x, y = mouse_pos
-    block_size = WIDTH // 9
+    block_size = 60  # Each cell is 60 pixels
+    
+    # Check for out-of-bounds coordinates
+    if x < 0 or y < 0 or x >= WIDTH or y >= HEIGHT:  # Check against the overall window size
+        return -1, -1
+
     col = x // block_size
     row = y // block_size
-    return row, col
+
+    return row, col  # Return (row, col) as expected
+
 
 # Placeholder function for checking if a number is in a row
 def is_number_in_row():
