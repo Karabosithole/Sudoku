@@ -12,23 +12,18 @@ BLACK = (0, 0, 0)  # Color for grid and text
 FONT = pygame.font.SysFont('Arial', 40)  # Font for displaying numbers
 
 def generate_sudoku():
-    """
-    Generates a random Sudoku puzzle.
-    
-    Returns:
-        grid (list of list of int): A Sudoku puzzle with some cells filled.
-    """
+    """Generates a random Sudoku puzzle."""
     base = 3
     side = base * base
 
     # Randomly shuffle numbers
-    def pattern(r, c): return (base*(r % base)+r//base+c) % side
+    def pattern(r, c): return (base * (r % base) + r // base + c) % side
     def shuffle(s): return random.sample(s, len(s))
     rBase = range(base)
-    rows  = [ g * base + r for g in shuffle(rBase) for r in shuffle(rBase) ]
-    cols  = [ g * base + c for g in shuffle(rBase) for c in shuffle(rBase) ]
-    nums  = shuffle(range(1, base*base + 1))
-    
+    rows = [g * base + r for g in shuffle(rBase) for r in shuffle(rBase)]
+    cols = [g * base + c for g in shuffle(rBase) for c in shuffle(rBase)]
+    nums = shuffle(range(1, base * base + 1))
+
     # Generate an empty grid
     grid = [[0 for _ in range(side)] for _ in range(side)]
 
@@ -50,7 +45,7 @@ grid = generate_sudoku()
 selected_cell = None  # Track the currently selected cell
 
 def draw_grid(screen):
-    """ Draws the Sudoku grid lines on the screen. """
+    """Draws the Sudoku grid lines on the screen."""
     block_size = WIDTH // 9
     for i in range(10):
         thickness = 3 if i % 3 == 0 else 1
@@ -58,7 +53,7 @@ def draw_grid(screen):
         pygame.draw.line(screen, BLACK, (i * block_size, 0), (i * block_size, WIDTH), thickness)
 
 def draw_numbers(screen, grid):
-    """ Draws numbers from the grid onto the screen. """
+    """Draws numbers from the grid onto the screen."""
     block_size = WIDTH // 9
     for row in range(9):
         for col in range(9):
@@ -67,7 +62,7 @@ def draw_numbers(screen, grid):
                 screen.blit(text, (col * block_size + 20, row * block_size + 10))
 
 def get_cell(mouse_pos):
-    """ Gets the row and column of the cell selected by mouse click. """
+    """Gets the row and column of the cell selected by mouse click."""
     x, y = mouse_pos
     block_size = WIDTH // 9
     if x < 0 or y < 0 or x >= WIDTH or y >= HEIGHT:
@@ -77,8 +72,34 @@ def get_cell(mouse_pos):
     row = y // block_size
     return row, col
 
+def is_valid_move(row, col, number):
+    """
+    Checks if placing the number at (row, col) is valid.
+    
+    Args:
+        row (int): The row index of the cell.
+        col (int): The column index of the cell.
+        number (int): The number to be placed in the cell.
+    
+    Returns:
+        bool: True if the move is valid, False otherwise.
+    """
+    # Check the row and column for the same number
+    for i in range(9):
+        if grid[row][i] == number or grid[i][col] == number:
+            return False
+
+    # Check the 3x3 square
+    start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+    for r in range(start_row, start_row + 3):
+        for c in range(start_col, start_col + 3):
+            if grid[r][c] == number:
+                return False
+
+    return True  # The move is valid
+
 def main():
-    """ Main function to run the Sudoku game. """
+    """Main function to run the Sudoku game."""
     global selected_cell
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Sudoku")
@@ -101,7 +122,9 @@ def main():
                 if selected_cell:
                     row, col = selected_cell
                     if event.key in range(pygame.K_1, pygame.K_9 + 1):
-                        grid[row][col] = event.key - pygame.K_0
+                        number = event.key - pygame.K_0  # Convert key to number
+                        if is_valid_move(row, col, number):  # Validate the move
+                            grid[row][col] = number  # Place the number if valid
 
         pygame.display.update()
 
@@ -109,4 +132,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
