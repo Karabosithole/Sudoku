@@ -11,21 +11,22 @@ WHITE = (255, 255, 255)  # Color for the background
 BLACK = (0, 0, 0)  # Color for grid and text
 FONT = pygame.font.SysFont('Arial', 40)  # Font for displaying numbers
 
+def is_valid_move(grid, row, col, num):
+    """Checks if placing the number at (row, col) is valid."""
+    # Check if the number is already in the row or column
+    for i in range(9):
+        if grid[row][i] == num or grid[i][col] == num:
+            return False
+    # Check the 3x3 box
+    start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+    for r in range(start_row, start_row + 3):
+        for c in range(start_col, start_col + 3):
+            if grid[r][c] == num:
+                return False
+    return True  # The move is valid
+
 def generate_complete_grid():
     """Generates a fully solved Sudoku grid using backtracking."""
-    def is_valid_move(grid, row, col, num):
-        # Check if the number is already in the row or column
-        for i in range(9):
-            if grid[row][i] == num or grid[i][col] == num:
-                return False
-        # Check the 3x3 box
-        start_row, start_col = 3 * (row // 3), 3 * (col // 3)
-        for r in range(start_row, start_row + 3):
-            for c in range(start_col, start_col + 3):
-                if grid[r][c] == num:
-                    return False
-        return True
-
     def solve(grid):
         for row in range(9):
             for col in range(9):
@@ -115,32 +116,6 @@ def get_cell(mouse_pos):
     row = y // block_size
     return row, col
 
-def is_valid_move(row, col, number):
-    """
-    Checks if placing the number at (row, col) is valid.
-    
-    Args:
-        row (int): The row index of the cell.
-        col (int): The column index of the cell.
-        number (int): The number to be placed in the cell.
-    
-    Returns:
-        bool: True if the move is valid, False otherwise.
-    """
-    # Check the row and column for the same number
-    for i in range(9):
-        if grid[row][i] == number or grid[i][col] == number:
-            return False
-
-    # Check the 3x3 square
-    start_row, start_col = 3 * (row // 3), 3 * (col // 3)
-    for r in range(start_row, start_row + 3):
-        for c in range(start_col, start_col + 3):
-            if grid[r][c] == number:
-                return False
-
-    return True  # The move is valid
-
 def main():
     """Main function to run the Sudoku game."""
     global selected_cell
@@ -166,7 +141,7 @@ def main():
                     row, col = selected_cell
                     if event.key in range(pygame.K_1, pygame.K_9 + 1):
                         number = event.key - pygame.K_0  # Convert key to number
-                        if is_valid_move(row, col, number):  # Validate the move
+                        if is_valid_move(grid, row, col, number):  # Validate the move
                             grid[row][col] = number  # Place the number if valid
 
         pygame.display.update()
